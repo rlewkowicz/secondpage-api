@@ -61,25 +61,28 @@ class Assets extends Controller
      */
     public function index($slug)
     {
-      $response = new StreamedResponse(function() use($slug){
+      $cluster   = Cassandra::cluster()
+                 ->withContactPoints(env('CASSANDRA_HOST'))// connects to localhost by default
+                 ->build();
+      $keyspace  = env('CASSANDRA_KEYSPACE');
+      $session   = $cluster->connect($keyspace);        // create session, optionally scoped to a keyspace
+      $objectstatement = new Cassandra\SimpleStatement(       // also supports prepared and batch statements
+          'SELECT object_id, chunk_count, content_type FROM image WHERE image_url=\''.(string)$slug.'\''
+      );
+      $futureobject    = $session->executeAsync($objectstatement);  // fully asynchronous and easy parallel execution
+      $resultobject    = $futureobject->get();
+
+      $response = new StreamedResponse(function() use($slug, $session, $resultobject){
           // Open output stream
           $handle = fopen('php://output', 'w');
           //
-          $cluster   = Cassandra::cluster()
-                     ->withContactPoints(env('CASSANDRA_HOST'))// connects to localhost by default
-                     ->build();
-          $keyspace  = env('CASSANDRA_KEYSPACE');
-          $session   = $cluster->connect($keyspace);        // create session, optionally scoped to a keyspace
-          $objectstatement = new Cassandra\SimpleStatement(       // also supports prepared and batch statements
-              'SELECT object_id, chunk_count FROM image WHERE image_url=\''.(string)$slug.'\''
-          );
-          $futureobject    = $session->executeAsync($objectstatement);  // fully asynchronous and easy parallel execution
-          $resultobject    = $futureobject->get();
+
 
           foreach (range(1, (int)$resultobject[0]['chunk_count']) as $number) {
             $chunkstatement = new Cassandra\SimpleStatement(       // also supports prepared and batch statements
                 'SELECT data, chunk_size FROM blob_chunk WHERE object_id=\''.$resultobject[0]['object_id'].'\' AND chunk_id='.$number
             );
+            // dd($resultobject[0]['object_id']);
             $resultchunk = $session->execute($chunkstatement);
             $data = hex2bin(substr($resultchunk[0]['data'],2));
             fwrite($handle, $data);
@@ -88,7 +91,7 @@ class Assets extends Controller
           fclose($handle);
       }
       , 200, [
-                // 'Content-Type' => $resultobject[0]['content_type'],
+                'Content-Type' => $resultobject[0]['content_type'],
                 // 'Content-Disposition' => 'attachment; filename="export.jpeg"',
             ]
           );
