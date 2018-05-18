@@ -1,2 +1,7 @@
 14-05-2018 20:05:34 UTC [ERROR] Closing established connection pool to host 172.27.0.2 because of the following error: Failed to send a heartbeat within connection idle interval. Terminating connection... (src/pool.cpp:412)
 14-05-2018 20:05:36 UTC [ERROR] Closing established connection pool to host 172.27.0.2 because of the following error: Failed to send a heartbeat within connection idle interval. Terminating connection... (src/pool.cpp:412)
+16-05-2018 14:08:01 UTC [ERROR] Closing established connection pool to host 172.28.0.2 because of the following error: Failed to send a heartbeat within connection idle interval. Terminating connection... (src/pool.cpp:412)
+16-05-2018 14:08:01 UTC [ERROR] Closing established connection pool to host 172.28.0.2 because of the following error: Failed to send a heartbeat within connection idle interval. Terminating connection... (src/pool.cpp:412)
+16-05-2018 14:08:01 UTC [ERROR] Closing established connection pool to host 172.28.0.2 because of the following error: Failed to send a heartbeat within connection idle interval. Terminating connection... (src/pool.cpp:412)
+16-05-2018 15:08:35 UTC [ERROR] Closing established connection pool to host 172.28.0.2 because of the following error: Failed to send a heartbeat within connection idle interval. Terminating connection... (src/pool.cpp:412)
+16-05-2018 15:08:44 UTC [ERROR] Closing established connection pool to host 172.28.0.2 because of the following error: Failed to send a heartbeat within connection idle interval. Terminating connection... (src/pool.cpp:412)
