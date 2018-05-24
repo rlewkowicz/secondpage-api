@@ -1,0 +1,7 @@
+2018-05-24 16:02:45,112 INFO daemonizing the supervisord process
+2018-05-24 16:02:45,113 INFO supervisord started with pid 10251
+2018-05-24 16:02:46,115 INFO spawned: 'supervisord' with pid 10427
+2018-05-24 16:02:48,071 INFO success: supervisord entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2018-05-24 16:05:11,293 INFO exited: supervisord (exit status 143; not expected)
+2018-05-24 16:05:11,294 INFO spawned: 'supervisord' with pid 11130
+2018-05-24 16:05:13,017 INFO success: supervisord entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)

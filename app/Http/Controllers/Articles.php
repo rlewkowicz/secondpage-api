@@ -4,15 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Cassandra;
+use DOMDocument;
+use DOMXPath;
 
-class CassandraTest extends Controller
+class Articles extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($slug)
     {
       $cluster   = Cassandra::cluster()
                  ->withContactPoints(env('CASSANDRA_HOST'))// connects to localhost by default
@@ -20,7 +22,7 @@ class CassandraTest extends Controller
       $keyspace  = env('CASSANDRA_KEYSPACE');
       $session   = $cluster->connect($keyspace);        // create session, optionally scoped to a keyspace
       $statement = new Cassandra\SimpleStatement(       // also supports prepared and batch statements
-          'SELECT url, publication, title, articletext, summary FROM article limit 100'
+          'SELECT html FROM article where url=\''.$slug.'\''
       );
       $future    = $session->executeAsync($statement);  // fully asynchronous and easy parallel execution
       $result    = $future->get();
@@ -28,13 +30,21 @@ class CassandraTest extends Controller
       $rows = [];
 
       foreach ($result as $row) {
-          $row['url']=env('APP_URL').'/articles/'.urlencode($row['url']);
-          array_push ( $rows, $row );
+        $dom = new DOMDocument;
+        libxml_use_internal_errors(true);
+        $dom->loadHTML($row['html']);
+        libxml_use_internal_errors(false);
+        $xpath = new DOMXPath($dom);
+        $nodes = $xpath->query("//@src");
+        foreach($nodes as $node) {
+          $node->value = env('APP_URL').'/assets/'.urlencode($node->value);
+        }
+        return $dom->saveHTML();
       }
 
-      return $rows;
 
     }
+
     /**
      * Show the form for creating a new resource.
      *
