@@ -20,7 +20,7 @@ class CassandraTest extends Controller
       $keyspace  = env('CASSANDRA_KEYSPACE');
       $session   = $cluster->connect($keyspace);        // create session, optionally scoped to a keyspace
       $statement = new Cassandra\SimpleStatement(       // also supports prepared and batch statements
-          'SELECT url, publication, title, articletext, summary FROM article limit 100'
+          "SELECT url, category, toTimestamp(timeuuid), publication, title, articletext, summary FROM article WHERE category='Sports'"
       );
       $future    = $session->executeAsync($statement);  // fully asynchronous and easy parallel execution
       $result    = $future->get();
@@ -28,6 +28,7 @@ class CassandraTest extends Controller
       $rows = [];
 
       foreach ($result as $row) {
+          $row['orignal_url']=$row['url'];
           $row['url']=env('APP_URL').'/articles/'.urlencode($row['url']);
           array_push ( $rows, $row );
       }

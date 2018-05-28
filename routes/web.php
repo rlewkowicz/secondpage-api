@@ -17,6 +17,8 @@
 
 Route::get('/', 'CassandraTest@index');
 
+Route::get('/index/{slug?}', 'Index@index');
+
 Route::get('/assets/{slug?}', 'Assets@index')->where('slug', '(.*)');
 
 Route::get('/articles/{slug?}', 'Articles@index')->where('slug', '(.*)');

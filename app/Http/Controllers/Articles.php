@@ -30,19 +30,44 @@ class Articles extends Controller
       $rows = [];
 
       foreach ($result as $row) {
+        // return $row['html'];
         $dom = new DOMDocument;
         libxml_use_internal_errors(true);
-        $dom->loadHTML($row['html']);
+        $dom->loadHTML('<?xml encoding="utf-8" ?>' . $row['html']);
         libxml_use_internal_errors(false);
         $xpath = new DOMXPath($dom);
         $nodes = $xpath->query("//@src");
         foreach($nodes as $node) {
-          $node->value = env('APP_URL').'/assets/'.urlencode($node->value);
+          if(substr( $node->value, 0, 4 ) === "http"){
+            $node->value = env('APP_URL').'/assets/'.urlencode($node->value);
+            if (strpos($node->value, '.js') !== false){
+                $node->value = 'localhost-broken';
+            }
+          }
+        }
+        $nodes = $xpath->query("//@itemid");
+        foreach($nodes as $node) {
+          if(substr( $node->value, 0, 4 ) === "http"){
+            $node->value = env('APP_URL').'/assets/'.urlencode($node->value);
+          }
+        }
+        $nodes = $xpath->query("//@srcset");
+        foreach($nodes as $node) {
+          $urls = explode(",",$node->value);
+          foreach($urls as &$url) {
+            $url = explode(" ",$url);
+            if(empty($url[0])){
+              unset($url[0]);
+              $url=array_values($url);
+            }
+            $url[0] = env('APP_URL').'/assets/'.urlencode($url[0]);
+            $url = implode(" ",$url);
+            unset($url);
+          }
+          $node->value = implode(", ", $urls);
         }
         return $dom->saveHTML();
       }
-
-
     }
 
     /**
