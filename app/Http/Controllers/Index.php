@@ -37,7 +37,7 @@ class Index extends Controller
          );
         } else {
          $statement = new Cassandra\SimpleStatement(       // also supports prepared and batch statements
-             "SELECT url, category, toTimestamp(timeuuid), publication, title, articletext, summary FROM article WHERE category='".$slug."' LIMIT 100"
+             "SELECT url, category, toTimestamp(timeuuid), publication, title, articletext, summary FROM article_category WHERE category='".$slug."' LIMIT 100"
          );
         }
         $future    = $session->executeAsync($statement);  // fully asynchronous and easy parallel execution
