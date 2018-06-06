@@ -33,11 +33,11 @@ class Index extends Controller
         $session   = $cluster->connect($keyspace);
         if(!in_array($slug, $catarr)){
          $statement = new Cassandra\SimpleStatement(       // also supports prepared and batch statements
-             "SELECT url, category, toTimestamp(timeuuid), publication, title, articletext, summary FROM article LIMIT 100"
+             "SELECT url, topimage, category, toTimestamp(timeuuid), publication, title, articletext, summary FROM article LIMIT 1000"
          );
         } else {
          $statement = new Cassandra\SimpleStatement(       // also supports prepared and batch statements
-             "SELECT url, category, toTimestamp(timeuuid), publication, title, articletext, summary FROM article_category WHERE category='".$slug."' LIMIT 100"
+             "SELECT url, topimage, category, toTimestamp(timeuuid), publication, title, articletext, summary FROM article_category WHERE category='".$slug."' LIMIT 1000"
          );
         }
         $future    = $session->executeAsync($statement);  // fully asynchronous and easy parallel execution
@@ -48,6 +48,7 @@ class Index extends Controller
         foreach ($result as $row) {
            $row['orignal_url']=$row['url'];
            $row['url']=env('APP_URL').'/articles/'.urlencode($row['url']);
+           $row['topimage']=env('APP_URL').'/assets/'.urlencode($row['topimage']);
            array_push ( $rows, $row );
         }
 
