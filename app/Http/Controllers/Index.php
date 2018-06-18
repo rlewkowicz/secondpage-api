@@ -27,7 +27,9 @@ class Index extends Controller
 
 
         $cluster   = Cassandra::cluster()
-                  ->withContactPoints(env('CASSANDRA_HOST'))// connects to localhost by default
+                  ->withContactPoints(env('CASSANDRA_HOST'))
+                  ->withPersistentSessions(true)
+                  ->withIOThreads(4)
                   ->build();
         $keyspace  = env('CASSANDRA_KEYSPACE');
         $session   = $cluster->connect($keyspace);

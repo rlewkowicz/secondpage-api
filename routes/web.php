@@ -15,7 +15,7 @@
 //     return view('welcome');
 // });
 
-Route::get('/', 'CassandraTest@index');
+Route::get('/{slug?}', 'Index@index');
 
 Route::get('/index/{slug?}', 'Index@index');
 
