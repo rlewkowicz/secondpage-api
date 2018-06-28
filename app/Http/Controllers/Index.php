@@ -28,7 +28,7 @@ class Index extends Controller
 
         $cluster   = Cassandra::cluster()
                   ->withContactPoints(env('CASSANDRA_HOST'))
-                  ->withPersistentSessions(true)
+                  ->withPersistentSessions(false)
                   ->withIOThreads(4)
                   ->build();
         $keyspace  = env('CASSANDRA_KEYSPACE');
@@ -53,8 +53,12 @@ class Index extends Controller
            $row['topimage']=env('APP_URL').'/assets/'.urlencode($row['topimage']);
            array_push ( $rows, $row );
         }
-
- return $rows;
+        try {
+            $session->close();
+        } catch (Cassandra\Exception $e) {
+            echo get_class($e) . ": " . $e->getMessage() . "\n";
+        }
+        return $rows;
      }
 
     /**

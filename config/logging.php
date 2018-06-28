@@ -41,13 +41,13 @@ return [
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
-            'level' => 'debug',
+            'level' => 'critical',
         ],
 
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
-            'level' => 'debug',
+            'level' => 'critical',
             'days' => 7,
         ],
 
@@ -69,12 +69,12 @@ return [
 
         'syslog' => [
             'driver' => 'syslog',
-            'level' => 'debug',
+            'level' => 'critical',
         ],
 
         'errorlog' => [
             'driver' => 'errorlog',
-            'level' => 'debug',
+            'level' => 'critical',
         ],
     ],
 
